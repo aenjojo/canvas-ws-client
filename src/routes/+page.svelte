@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    // import { onMount } from "svelte";
 
     let canvas: HTMLCanvasElement;
     let ctx: CanvasRenderingContext2D;
-    let socket;
+    let socket: WebSocket;
 
     const squareSize = 20;
 
@@ -12,6 +12,8 @@
 
         socket.addEventListener("open", () => {
             console.log("WebSocket connected");
+
+            socket.send('sub');
         });
 
         socket.addEventListener("message", (event) => {
@@ -32,6 +34,8 @@
         socket.addEventListener("error", (error) => {
             console.error("WebSocket error:", error);
         });
+
+        return socket;
     }
 
     function drawSquare(x: number, y: number) {
@@ -42,7 +46,7 @@
         }
     }
 
-    onMount(() => {
+    $effect(() => {
         if (canvas) {
             ctx = canvas.getContext("2d")!;
             setupWebSocket();
